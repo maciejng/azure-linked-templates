@@ -82,7 +82,7 @@
       "dbasgId": "[resourceId('Microsoft.Network/applicationSecurityGroups', concat(parameters('dbSecurityGroupName'),'dbasg'))]",
       "feasgId": "[resourceId('Microsoft.Network/applicationSecurityGroups', concat(parameters('feSecurityGroupName'),'feasg'))]",
       "beasgId": "[resourceId('Microsoft.Network/applicationSecurityGroups', concat(parameters('beSecurityGroupName'),'beasg'))]",      
-      "bastionasgId": "[resourceId('Microsoft.Network/applicationSecurityGroups', concat(parameters('beSecurityGroupName'),'beasg'))]"
+      "bastionasgId": "[resourceId('Microsoft.Network/applicationSecurityGroups', concat(parameters('bastionSecurityGroupName'),'bstasg'))]"
   },
   "resources": [
         {
