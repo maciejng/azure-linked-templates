@@ -1,0 +1,187 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.1",
+    "parameters": {
+        "LbName": {
+            "type": "string",
+            "defaultValue": "defaultLB",
+            "metadata": {
+                "description": "Azure Storage account name."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        },
+        "publicIpAddressName": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        },
+        "publicIpAddressType": {
+            "type": "string",
+            "defaultValue": "Dynamic"
+        },
+        "publicIpAddressSku": {
+            "type": "string",
+            "defaultValue": "Basic"
+        },
+        "backendAddressPools": {
+            "type": "string",
+            "defaultValue": "FrontEndPool"
+        },
+        "LoadBalancerFrontEnd": {
+            "type": "string",
+            "defaultValue": "LoadBalancerFrontEnd"
+        },
+        "LoadBalancerFrontEndPool": {
+            "type": "string",
+            "defaultValue": "FrontEndPool"
+        },
+        "LoadBalancerTcpProbe":{
+            "type": "string",
+            "defaultValue": "tcpProbe"            
+        },
+        "numberOfFrontends": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Number of Frontend nodes installed"
+            }
+        },
+        "inboundNatRuleName":{
+            "type": "string",
+            "defaultValue": "defaultNatRule"             
+        }
+                
+    },
+  "variables":{
+        "publicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('publicIPAddressName'))]",
+        "lbID": "[resourceId('Microsoft.Network/loadBalancers',parameters('LbName'))]",
+        "frontEndIPConfigID": "[concat(variables('lbID'),'/frontendIPConfigurations/',parameters('LoadBalancerFrontEnd'))]",
+        "lbPoolID": "[concat(variables('lbID'),'/backendAddressPools/',parameters('LoadBalancerFrontEndPool'))]",
+        "lbProbeID": "[concat(variables('lbID'),'/probes/',parameters('LoadBalancerTcpProbe'))]"
+
+  },
+  "resources": [
+            {
+            "name": "[parameters('publicIpAddressName')]",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "apiVersion": "2019-02-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publicIpAllocationMethod": "[parameters('publicIpAddressType')]"
+            },
+            "sku": {
+                "name": "[parameters('publicIpAddressSku')]"
+            }
+        },
+        {
+        "name": "[parameters('LbName')]",
+        "type": "Microsoft.Network/loadBalancers",
+        "apiVersion": "2018-08-01",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+            "[concat('Microsoft.Network/publicIPAddresses/', parameters('publicIpAddressName'))]"
+        ],
+        "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "LoadBalancerFrontEnd",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[variables('publicIPAddressID')]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[parameters('backendAddressPools')]"
+          }
+        ],
+        "loadBalancingRules": [
+            {
+                "name": "LBRuleHTTP",
+                "properties": {
+                "frontendIPConfiguration": {
+                    "id": "[variables('frontEndIPConfigID')]"
+                },
+                "backendAddressPool": {
+                    "id": "[variables('lbPoolID')]"
+                },
+                "protocol": "Tcp",
+                "frontendPort": 80,
+                "backendPort": 80,
+                "enableFloatingIP": false,
+                "idleTimeoutInMinutes": 5,
+                "probe": {
+                    "id": "[variables('lbProbeID')]"
+                    }
+                }
+            },
+            {
+                "name": "LBRuleHTTPS",
+                "properties": {
+                "frontendIPConfiguration": {
+                    "id": "[variables('frontEndIPConfigID')]"
+                },
+                "backendAddressPool": {
+                    "id": "[variables('lbPoolID')]"
+                },
+                "protocol": "Tcp",
+                "frontendPort": 443,
+                "backendPort": 443,
+                "enableFloatingIP": false,
+                "idleTimeoutInMinutes": 5,
+                "probe": {
+                    "id": "[variables('lbProbeID')]"
+                    }
+                }
+            }
+        ],
+        "probes": [
+            {
+                "name": "tcpProbe",
+                "properties": {
+                "protocol": "Tcp",
+                "port": 80,
+                "intervalInSeconds": 5,
+                "numberOfProbes": 2
+                }
+            }
+            ]
+        }
+        },
+        {
+        "apiVersion": "2015-06-15",
+        "type": "Microsoft.Network/loadBalancers/inboundNatRules",
+        "name": "[concat(parameters('LbName'),'/',parameters('inboundNatRuleName'),copyindex())]",
+        "location": "[parameters('location')]",
+        "copy": {
+            "name": "lbNatLoop",
+            "count": "[parameters('numberOfFrontends')]"
+        },
+        "dependsOn": [
+            "[concat('Microsoft.Network/loadBalancers/', parameters('LbName'))]"
+        ],
+        "properties": {
+            "frontendIPConfiguration": {
+            "id": "[variables('frontEndIPConfigID')]"
+            },
+            "protocol": "Tcp",
+            "frontendPort": "[copyIndex(5000)]",
+            "backendPort": 22,
+            "enableFloatingIP": false
+        }
+        }      
+  ],
+  "outputs": {
+  
+  }
+}
