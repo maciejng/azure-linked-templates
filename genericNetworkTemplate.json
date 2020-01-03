@@ -5,7 +5,7 @@
         "virtualNetworkName": {
             "type": "string",
             "metadata": {
-                "description": "Azure Storage account name."
+                "description": "Azure Virtual Network name."
             }
         },
         "location": {
@@ -35,14 +35,6 @@
             "metadata": {
                 "description": "Allowed network addresses"
             }
-        },
-        "publicIpAddressType": {
-            "type": "string",
-            "defaultValue": "Dynamic"
-        },
-        "publicIpAddressSku": {
-            "type": "string",
-            "defaultValue": "Basic"
         },
         "bastionSecurityGroupName": {
             "type": "string",
