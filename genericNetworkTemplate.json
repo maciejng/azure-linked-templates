@@ -164,7 +164,8 @@
             "condition": "[greater(parameters('NumberOfPrivateSubnets'), 0)]",
             "apiVersion": "2019-02-01",
             "dependsOn": [
-                "[parameters('virtualNetworkName')]"
+                "[parameters('virtualNetworkName')]",
+                "publicSubnetsLoop"
             ],
             "location": "[parameters('location')]",
             "copy": {
