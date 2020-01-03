@@ -1,0 +1,236 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.1",
+    "parameters": {
+        "VMCount": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Number of nodes installed"
+            }
+        },
+        "VMName": {
+            "type": "string",
+            "defaultValue": "defaultVM",
+            "metadata": {
+                "description": "Azure VM name."
+            }
+        },
+        "NicName": {
+            "type": "string",
+            "defaultValue": "defaultNic",
+            "metadata": {
+                "description": "Azure NIC for VM name."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        },
+        "deploymentSize": {
+        	"type": "string",
+        	"defaultValue": "Small",
+       		"allowedValues": [
+            	"Small"
+            ]
+        },
+        "osystem":{
+        	"type": "string",
+        	"defaultValue": "Centos",
+       		"allowedValues": [
+            	"Centos",
+           	    "Ubuntu",
+           		"Windows"
+            ]
+        },
+        "osDiskType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Premium_LRS"
+            ]
+        },
+        "availabilitySetName":{
+            "type": "string",
+            "defaultValue": "defaultAS"             
+        },
+        "appSecurityGroup":{
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Application security group assigned if used."        
+            }  
+        },
+        "subnetRef":{
+            "type": "string",
+            "metadata": {
+                "description": "Subnet to deploy your resources."        
+            }
+        },
+        "lbID":{
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "LB to deploy your resources."        
+            }
+        },
+        "backendAddressPools": {
+            "type": "string",
+            "defaultValue": "FrontEndPool"
+        },
+        "UseNAT": {
+            "type": "string",
+            "defaultValue": "no",
+            "allowedValues": [
+                "yes",
+                "no"
+            ],
+            "metadata": {
+                "description": "Will the VM's be accesible by SSH directly via LB"
+            }   
+        },
+        "inboundNatRuleName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Nat rule to assigned if used."        
+            }           
+        },
+        "portforwarding": {
+            "type": "string",
+            "defaultValue": "true",
+            "allowedValues": [
+                "true",
+                "false"
+            ],
+            "metadata": {
+                "description": "Will the VM's be able to do SSH tunneling"
+            }   
+        },
+        "adminUsername": {
+            "type": "string"
+        },
+        "adminPassword": {
+            "type": "secureString"
+        }
+    },
+  "variables":{
+	    "sizing-Small": {
+            "VMSize": "Standard_D2s_v3"
+    	},
+        "os-centos": {
+            "publisher": "OpenLogic",
+            "offer": "CentOS",
+            "sku": "7.7",
+            "version": "latest"
+        }
+        
+  },
+  "resources": [
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[parameters('availabilitySetName')]",
+            "apiVersion": "2016-04-30-preview",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "platformFaultDomainCount": 3,
+                "platformUpdateDomainCount": 3,
+                "managed": true
+            }
+        },
+        {
+            "name": "[concat(parameters('NicName'),copyindex())]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vm-nic-loop",
+                "count": "[parameters('VMCount')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Network/availabilitySets/', parameters('availabilitySetName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('subnetRef')]"
+                            },
+                            "loadBalancerBackendAddressPools": [
+                                {
+                                "id": "[if(greater(length(parameters('lbID')), 0),concat(parameters('lbID'), '/backendAddressPools/', parameters('backendAddressPools')),json('null'))]"
+                                }
+                            ],
+                            "loadBalancerInboundNatRules": [
+                                {
+                                "id": "[if(equals(parameters('UseNAT'),'yes'),concat(parameters('lbID'),'/inboundNatRules/', parameters('inboundNatRuleName'),copyindex()),json('null'))]"
+                                }
+                            ],
+                            "applicationSecurityGroups": [ 
+                                {
+                                "id": "[if(greater(length(parameters('appSecurityGroup')), 0),parameters('appSecurityGroup'),json('null'))]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "enableIPForwarding": "[parameters('portforwarding')]"
+            }
+        },
+        {
+            "name": "[concat(parameters('VMName'),copyindex())]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-07-01",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vm-loop",
+                "count": "[parameters('VMCount')]"
+            },
+            "dependsOn": ["vm-nic-loop"],
+            "properties": {
+                "availabilitySet": {
+                "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetName'))]"
+                },
+                "hardwareProfile": {
+                    "vmSize": "[variables(concat('sizing-',parameters('deploymentSize'))).VMSize]"
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('osDiskType')]"
+                        }
+                    },
+                    "imageReference": {
+                        "publisher": "[variables(concat('os-',parameters('osystem'))).publisher]",
+                        "offer": "[variables(concat('os-',parameters('osystem'))).offer]",
+                        "sku": "[variables(concat('os-',parameters('osystem'))).sku]",
+                        "version": "[variables(concat('os-',parameters('osystem'))).version]"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('NicName'),copyIndex()))]"
+                        }
+                    ]
+                },
+                "osProfile": {
+                    "computerName": "[parameters('VMName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                }
+            }
+        }
+
+  ],
+  "outputs": {
+  
+  }
+}
