@@ -138,7 +138,10 @@
             "offer": "CentOS",
             "sku": "7.7",
             "version": "latest"
-        }
+        },
+        "f1": "[if(equals(parameters('dedicatedbastionhost'),'no'),'1','0')]",
+        "f2": "[if(equals(parameters('UseNAT'),'yes'),'1','0')]",
+        "f3": "[if(greater(length(parameters('appSecurityGroup')), 0),'1','0')]"
         
   },
   "resources": [
@@ -154,10 +157,10 @@
             }
         },
         {
-            "name": "[concat(parameters('NicName'),copyindex())]",
+            "name": "[concat(parameters('NicName'),variables('f1'),variables('f2'),variables('f3'),'-',copyindex())]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
-            "condition": "[and(equals(parameters('dedicatedbastionhost'),'no'),equals(parameters('UseNAT'),'yes'),greater(length(parameters('appSecurityGroup')), 0))]",
+            "condition": "[and(equals(variables('f1'),'1'),equals(variables('f2'),'1'),equals(variables('f3'),'1'))]",
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
@@ -196,10 +199,10 @@
             }
         },
         {
-            "name": "[concat(parameters('NicName'),copyindex())]",
+            "name": "[concat(parameters('NicName'),variables('f1'),variables('f2'),variables('f3'),'-',copyindex())]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
-            "condition": "[and(equals(parameters('dedicatedbastionhost'),'yes'),equals(parameters('UseNAT'),'yes'),greater(length(parameters('appSecurityGroup')), 0))]",
+            "condition": "[and(equals(variables('f1'),'0'),equals(variables('f2'),'1'),equals(variables('f3'),'1'))]",
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
@@ -233,10 +236,10 @@
             }
         },
         {
-            "name": "[concat(parameters('NicName'),copyindex())]",
+            "name": "[concat(parameters('NicName'),variables('f1'),variables('f2'),variables('f3'),'-',copyindex())]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
-            "condition": "[and(equals(parameters('dedicatedbastionhost'),'no'),equals(parameters('UseNAT'),'no'),greater(length(parameters('appSecurityGroup')), 0))]",
+            "condition": "[and(equals(variables('f1'),'0'),equals(variables('f2'),'1'),equals(variables('f3'),'1'))]",
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
@@ -265,10 +268,10 @@
             }
         },
         {
-            "name": "[concat(parameters('NicName'),copyindex())]",
+            "name": "[concat(parameters('NicName'),variables('f1'),variables('f2'),variables('f3'),'-',copyindex())]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
-            "condition": "[and(equals(parameters('dedicatedbastionhost'),'no'),equals(parameters('UseNAT'),'yes'),equals(length(parameters('appSecurityGroup')), 0))]",
+            "condition": "[and(equals(variables('f1'),'1'),equals(variables('f2'),'1'),equals(variables('f3'),'0'))]",
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
@@ -302,10 +305,10 @@
             }
         },
         {
-            "name": "[concat(parameters('NicName'),copyindex())]",
+            "name": "[concat(parameters('NicName'),variables('f1'),variables('f2'),variables('f3'),'-',copyindex())]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
-            "condition": "[and(equals(parameters('dedicatedbastionhost'),'yes'),equals(parameters('UseNAT'),'yes'),equals(length(parameters('appSecurityGroup')), 0))]",
+            "condition": "[and(equals(variables('f1'),'0'),equals(variables('f2'),'1'),equals(variables('f3'),'0'))]",
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
@@ -333,10 +336,10 @@
             }
         },
         {
-            "name": "[concat(parameters('NicName'),copyindex())]",
+            "name": "[concat(parameters('NicName'),variables('f1'),variables('f2'),variables('f3'),'-',copyindex())]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
-            "condition": "[and(equals(parameters('dedicatedbastionhost'),'no'),equals(parameters('UseNAT'),'no'),equals(length(parameters('appSecurityGroup')), 0))]",
+            "condition": "[and(equals(variables('f1'),'1'),equals(variables('f2'),'0'),equals(variables('f3'),'0'))]",
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
@@ -393,7 +396,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('NicName'),copyIndex()))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('NicName'),variables('f1'),variables('f2'),variables('f3'),'-',copyIndex()))]"
                         }
                     ]
                 },
