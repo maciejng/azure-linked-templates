@@ -152,7 +152,7 @@
                 "count": "[parameters('VMCount')]"
             },
             "dependsOn": [
-                "[concat('Microsoft.Network/availabilitySets/', parameters('availabilitySetName'))]"
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
             ],
             "properties": {
                 "ipConfigurations": [
