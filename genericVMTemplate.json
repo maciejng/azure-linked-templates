@@ -93,17 +93,6 @@
                 "description": "Will the VM's be accesible by SSH directly via LB"
             }   
         },
-        "dedicatedbastionhost": {
-            "type": "string",
-            "defaultValue": "no",
-            "allowedValues": [
-                "yes",
-                "no"
-            ],
-            "metadata": {
-                "description": "Identify the bastion host VM"
-            }   
-        },
         "inboundNatRuleName": {
             "type": "string",
             "defaultValue": "",
@@ -175,7 +164,7 @@
                             },
                             "loadBalancerBackendAddressPools": [
                                 {
-                                "id": "[if(equals(parameters('dedicatedbastionhost'), 'no'),concat(parameters('lbID'), '/backendAddressPools/', parameters('backendAddressPools')),json('null'))]"
+                                "id": "[if(greater(length(parameters('lbID')), 0),concat(parameters('lbID'), '/backendAddressPools/', parameters('backendAddressPools')),json('null'))]"
                                 }
                             ],
                             "loadBalancerInboundNatRules": [
