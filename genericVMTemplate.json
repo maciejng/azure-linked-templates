@@ -93,6 +93,17 @@
                 "description": "Will the VM's be accesible by SSH directly via LB"
             }   
         },
+        "dedicatedbastionhost": {
+            "type": "string",
+            "defaultValue": "no",
+            "allowedValues": [
+                "yes",
+                "no"
+            ],
+            "metadata": {
+                "description": "Identify the bastion host VM"
+            }   
+        },
         "inboundNatRuleName": {
             "type": "string",
             "defaultValue": "",
@@ -146,6 +157,7 @@
             "name": "[concat(parameters('NicName'),copyindex())]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
+            "condition": "[and(equals(parameters('dedicatedbastionhost'),'no'),equals(parameters('UseNAT'),'yes'),greater(length(parameters('appSecurityGroup')), 0))]",
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
@@ -164,19 +176,183 @@
                             },
                             "loadBalancerBackendAddressPools": [
                                 {
-                                "id": "[if(greater(length(parameters('lbID')), 0),concat(parameters('lbID'), '/backendAddressPools/', parameters('backendAddressPools')),json('null'))]"
+                                "id": "[concat(parameters('lbID'), '/backendAddressPools/', parameters('backendAddressPools'))]"
                                 }
                             ],
                             "loadBalancerInboundNatRules": [
                                 {
-                                "id": "[if(equals(parameters('UseNAT'),'yes'),concat(parameters('lbID'),'/inboundNatRules/', parameters('inboundNatRuleName'),copyindex()),json('null'))]"
+                                "id": "[concat(parameters('lbID'),'/inboundNatRules/', parameters('inboundNatRuleName'),copyindex())]"
                                 }
                             ],
+                            "applicationSecurityGroups": [ 
+                                {
+                                "id": "[parameters('appSecurityGroup')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "enableIPForwarding": "[parameters('portforwarding')]"
+            }
+        },
+        {
+            "name": "[concat(parameters('NicName'),copyindex())]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-07-01",
+            "condition": "[and(equals(parameters('dedicatedbastionhost'),'yes'),equals(parameters('UseNAT'),'yes'),greater(length(parameters('appSecurityGroup')), 0))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vm-nic-loop",
+                "count": "[parameters('VMCount')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('subnetRef')]"
+                            },
+                            "loadBalancerInboundNatRules": [
+                                {
+                                "id": "[concat(parameters('lbID'),'/inboundNatRules/', parameters('inboundNatRuleName'),copyindex())]"
+                                }
+                            ],
+                            "applicationSecurityGroups": [ 
+                                {
+                                "id": "[parameters('appSecurityGroup')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "enableIPForwarding": "[parameters('portforwarding')]"
+            }
+        },
+        {
+            "name": "[concat(parameters('NicName'),copyindex())]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-07-01",
+            "condition": "[and(equals(parameters('dedicatedbastionhost'),'no'),equals(parameters('UseNAT'),'no'),greater(length(parameters('appSecurityGroup')), 0))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vm-nic-loop",
+                "count": "[parameters('VMCount')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('subnetRef')]"
+                            },
                             "applicationSecurityGroups": [ 
                                 {
                                 "id": "[if(greater(length(parameters('appSecurityGroup')), 0),parameters('appSecurityGroup'),json('null'))]"
                                 }
                             ]
+                        }
+                    }
+                ],
+                "enableIPForwarding": "[parameters('portforwarding')]"
+            }
+        },
+        {
+            "name": "[concat(parameters('NicName'),copyindex())]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-07-01",
+            "condition": "[and(equals(parameters('dedicatedbastionhost'),'no'),equals(parameters('UseNAT'),'yes'),equals(length(parameters('appSecurityGroup')), 0))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vm-nic-loop",
+                "count": "[parameters('VMCount')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('subnetRef')]"
+                            },
+                            "loadBalancerBackendAddressPools": [
+                                {
+                                "id": "[concat(parameters('lbID'), '/backendAddressPools/', parameters('backendAddressPools'))]"
+                                }
+                            ],
+                            "loadBalancerInboundNatRules": [
+                                {
+                                "id": "[concat(parameters('lbID'),'/inboundNatRules/', parameters('inboundNatRuleName'),copyindex())]"
+                                }
+                            ]                        
+                        }
+                    }
+                ],
+                "enableIPForwarding": "[parameters('portforwarding')]"
+            }
+        },
+        {
+            "name": "[concat(parameters('NicName'),copyindex())]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-07-01",
+            "condition": "[and(equals(parameters('dedicatedbastionhost'),'yes'),equals(parameters('UseNAT'),'yes'),equals(length(parameters('appSecurityGroup')), 0))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vm-nic-loop",
+                "count": "[parameters('VMCount')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('subnetRef')]"
+                            },
+                            "loadBalancerInboundNatRules": [
+                                {
+                                "id": "[concat(parameters('lbID'),'/inboundNatRules/', parameters('inboundNatRuleName'),copyindex())]"                                }
+                            ]
+                        }
+                    }
+                ],
+                "enableIPForwarding": "[parameters('portforwarding')]"
+            }
+        },
+        {
+            "name": "[concat(parameters('NicName'),copyindex())]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-07-01",
+            "condition": "[and(equals(parameters('dedicatedbastionhost'),'no'),equals(parameters('UseNAT'),'no'),equals(length(parameters('appSecurityGroup')), 0))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vm-nic-loop",
+                "count": "[parameters('VMCount')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('subnetRef')]"
+                            }
                         }
                     }
                 ],
