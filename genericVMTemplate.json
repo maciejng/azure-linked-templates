@@ -273,6 +273,38 @@
             }
         },
         {
+            "name": "[concat(parameters('NicName'),'001-',copyindex())]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-07-01",
+            "condition": "[and(equals(variables('f1'),'0'),equals(variables('f2'),'0'),equals(variables('f3'),'1'))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vm-nic-loop",
+                "count": "[parameters('VMCount')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('subnetRef')]"
+                            },
+                            "applicationSecurityGroups": [ 
+                                {
+                                "id": "[parameters('appSecurityGroup')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "enableIPForwarding": "[parameters('portforwarding')]"
+            }
+        },
+        {
             "name": "[concat(parameters('NicName'),'110-',copyindex())]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
@@ -366,6 +398,33 @@
                                 "id": "[concat(parameters('lbID'), '/backendAddressPools/', parameters('backendAddressPools'))]"
                                 }
                             ]
+                        }
+                    }
+                ],
+                "enableIPForwarding": "[parameters('portforwarding')]"
+            }
+        },
+        {
+            "name": "[concat(parameters('NicName'),'000-',copyindex())]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-07-01",
+            "condition": "[and(equals(variables('f1'),'0'),equals(variables('f2'),'0'),equals(variables('f3'),'0'))]",
+            "location": "[parameters('location')]",
+            "copy": {
+                "name": "vm-nic-loop",
+                "count": "[parameters('VMCount')]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet": {
+                                "id": "[parameters('subnetRef')]"
+                            }
                         }
                     }
                 ],
