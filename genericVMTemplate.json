@@ -256,9 +256,14 @@
                             "subnet": {
                                 "id": "[parameters('subnetRef')]"
                             },
+                            "loadBalancerBackendAddressPools": [
+                                {
+                                "id": "[concat(parameters('lbID'), '/backendAddressPools/', parameters('backendAddressPools'))]"
+                                }
+                            ],
                             "applicationSecurityGroups": [ 
                                 {
-                                "id": "[if(greater(length(parameters('appSecurityGroup')), 0),parameters('appSecurityGroup'),json('null'))]"
+                                "id": "[parameters('appSecurityGroup')]"
                                 }
                             ]
                         }
@@ -355,7 +360,12 @@
                         "properties": {
                             "subnet": {
                                 "id": "[parameters('subnetRef')]"
-                            }
+                            },
+                            "loadBalancerBackendAddressPools": [
+                                {
+                                "id": "[concat(parameters('lbID'), '/backendAddressPools/', parameters('backendAddressPools'))]"
+                                }
+                            ]
                         }
                     }
                 ],
