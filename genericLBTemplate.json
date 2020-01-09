@@ -6,7 +6,7 @@
             "type": "string",
             "defaultValue": "defaultLB",
             "metadata": {
-                "description": "Azure Storage account name."
+                "description": "Azure LB name."
             }
         },
         "location": {
@@ -18,9 +18,9 @@
         },
         "publicIpAddressName": {
             "type": "string",
-            "defaultValue": "[resourceGroup().location]",
+            "defaultValue": "defaultpublicIP",
             "metadata": {
-                "description": "Location for all resources."
+                "description": "Name of the Public IP Name"
             }
         },
         "publicIpAddressType": {
@@ -30,10 +30,6 @@
         "publicIpAddressSku": {
             "type": "string",
             "defaultValue": "Basic"
-        },
-        "backendAddressPools": {
-            "type": "string",
-            "defaultValue": "FrontEndPool"
         },
         "LoadBalancerFrontEnd": {
             "type": "string",
@@ -102,7 +98,7 @@
         ],
         "backendAddressPools": [
           {
-            "name": "[parameters('backendAddressPools')]"
+            "name": "[parameters('LoadBalancerFrontEndPool')]"
           }
         ],
         "loadBalancingRules": [
