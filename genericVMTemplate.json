@@ -127,6 +127,10 @@
         },
         "adminPassword": {
             "type": "secureString"
+        },
+        "adminPublicKey": {
+            "type": "string",
+            "defaultValue": ""       
         }
     },
   "variables":{
@@ -472,7 +476,19 @@
                 "osProfile": {
                     "computerName": "[parameters('VMName')]",
                     "adminUsername": "[parameters('adminUsername')]",
-                    "adminPassword": "[parameters('adminPassword')]"
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": "[if(greater(length(parameters('adminPublicKey')), 0),'true','false')]",
+                        "ssh": {
+                        "publicKeys": [
+                            {
+                            "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+                            "keyData": "[parameters('adminPublicKey')]"
+                            }
+                        ]
+                        }
+        
+                    }
                 }
             }
         }
