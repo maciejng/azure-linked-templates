@@ -483,7 +483,7 @@
                         "publicKeys": [
                             {
                             "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
-                            "keyData": "[if(greater(length(parameters('adminPublicKey')), 0),parameters('adminPublicKey'),'ssh-rsa AAAAA1AaaA1a11AAAAAAAAAAAAAAAAAAaA1A1a11AA/1111aaAAAAAaAlAAA1AaaaAA1AA/wYwtsJ8iCszg4/lXQsfLFxYmEVe8L9atgtMGCi5QdYPl4X/c+5YxFfm88Yjfx+2xEgUdOr864eaI22yaNMQ0AlyilmK+PcSyxKP4dzkf6B5Nsw8lhfB5n9F5md6GHLLjOGuBbHYlesKJKnt2cMzzS90BdRk73qW6wJ+MCUWo+cyBFZVGOzrjJGEcHewOCbVs+IJWBFSi6w1enbKGc+RY9KrnzeDKWWqzYnNofiHGVFAuMxrmZOasqlTIKiC2UK3RmLxZicWiQmPnpnjJRo7pL0oYM9r/sIWzD6i2S9szDy6aZ mike@laptop1')]"
+                            "keyData": "[if(greater(length(parameters('adminPublicKey')), 0),parameters('adminPublicKey'),'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDUg0+0f/UV4G+xdORf3CyrtjpaQRwgSRwzuc+pBLrVd/FDeDC1+LcEq2NFPxPzlErpZdzMKkD/f9FH1APBihpC6qiD0E2LL06MNIYbfpwdIegwCi3CViMQhosdBQ5MJPPLO9Qqgx/dRcqhSBqI7SHyO2OVtxw7HM65NU5JKIK6ffUCCphxDu2dd13qrzUhhOqNeBefAoKmIpsf/gwnL2LADdt5PBU5G2VOpbdeBdByM0uQ+AOgapYOixnJy3lf16QkFVKauJJTE+yTO9HsnseI13gFPQZdvBwvVcZEJuO5YGI2kBAkp81vo8eroT7cHCy6dIAz1qpAORDEC4a0nj9r')]"
                             }
                         ]
                         }
