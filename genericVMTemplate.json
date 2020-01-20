@@ -145,7 +145,8 @@
         },
         "f1": "[if(equals(parameters('dedicatedbastionhost'),'no'),'1','0')]",
         "f2": "[if(equals(parameters('UseNAT'),'yes'),'1','0')]",
-        "f3": "[if(greater(length(parameters('appSecurityGroup')), 0),'1','0')]"
+        "f3": "[if(greater(length(parameters('appSecurityGroup')), 0),'1','0')]",
+        "extravariable": "[if(greater(parameters('VMCount'),0),parameters('VMCount'),1)]"
         
   },
   "resources": [
@@ -210,7 +211,7 @@
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
-                "count": "[parameters('VMCount')]"
+                "count": "[variables('extravariable')]"
             },
             "dependsOn": [
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
@@ -247,7 +248,7 @@
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
-                "count": "[parameters('VMCount')]"
+                "count": "[variables('extravariable')]"
             },
             "dependsOn": [
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
@@ -284,7 +285,7 @@
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
-                "count": "[parameters('VMCount')]"
+                "count": "[variables('extravariable')]"
             },
             "dependsOn": [
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
@@ -316,7 +317,7 @@
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
-                "count": "[parameters('VMCount')]"
+                "count": "[variables('extravariable')]"
             },
             "dependsOn": [
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
@@ -353,7 +354,7 @@
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
-                "count": "[parameters('VMCount')]"
+                "count": "[variables('extravariable')]"
             },
             "dependsOn": [
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
@@ -384,7 +385,7 @@
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
-                "count": "[parameters('VMCount')]"
+                "count": "[variables('extravariable')]"
             },
             "dependsOn": [
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
@@ -416,7 +417,7 @@
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
-                "count": "[parameters('VMCount')]"
+                "count": "[variables('extravariable')]"
             },
             "dependsOn": [
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
@@ -443,7 +444,7 @@
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-loop",
-                "count": "[parameters('VMCount')]"
+                "count": "[variables('extravariable')]"
             },
             "dependsOn": ["vm-nic-loop"],
             "properties": {
