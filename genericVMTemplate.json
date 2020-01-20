@@ -169,7 +169,7 @@
             "location": "[parameters('location')]",
             "copy": {
                 "name": "vm-nic-loop",
-                "count": "[parameters('VMCount')]"
+                "count": "[variables('extravariable')]"
             },
             "dependsOn": [
                 "[concat('Microsoft.Compute/availabilitySets/', parameters('availabilitySetName'))]"
