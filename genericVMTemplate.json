@@ -483,8 +483,8 @@
                         "ssh": {
                         "publicKeys": [
                             {
-                            "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",ç
-			    "keyData": "[if(greater(length(parameters('adminPublicKey')), 0),parameters('adminPublicKey'),'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDUg0+0f/UV4G+xdORf3CyrtjpaQRwgSRwzuc+pBLrVd/FDeDC1+LcEq2NFPxPzlErpZdzMKkD/f9FH1APBihpC6qiD0E2LL06MNIYbfpwdIegwCi3CViMQhosdBQ5MJPPLO9Qqgx/dRcqhSBqI7SHyO2OVtxw7HM65NU5JKIK6ffUCCphxDu2dd13qrzUhhOqNeBefAoKmIpsf/gwnL2LADdt5PBU5G2VOpbdeBdByM0uQ+AOgapYOixnJy3lf16QkFVKauJJTE+yTO9HsnseI13gFPQZdvBwvVcZEJuO5YGI2kBAkp81vo8eroT7cHCy6dIAz1qpAORDEC4a0nj9r')]"
+                            "path": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
+			                "keyData": "[if(greater(length(parameters('adminPublicKey')), 0),parameters('adminPublicKey'),'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDUg0+0f/UV4G+xdORf3CyrtjpaQRwgSRwzuc+pBLrVd/FDeDC1+LcEq2NFPxPzlErpZdzMKkD/f9FH1APBihpC6qiD0E2LL06MNIYbfpwdIegwCi3CViMQhosdBQ5MJPPLO9Qqgx/dRcqhSBqI7SHyO2OVtxw7HM65NU5JKIK6ffUCCphxDu2dd13qrzUhhOqNeBefAoKmIpsf/gwnL2LADdt5PBU5G2VOpbdeBdByM0uQ+AOgapYOixnJy3lf16QkFVKauJJTE+yTO9HsnseI13gFPQZdvBwvVcZEJuO5YGI2kBAkp81vo8eroT7cHCy6dIAz1qpAORDEC4a0nj9r')]"
                             }
                         ]
                         }
