@@ -498,6 +498,7 @@
   ],
  "outputs": {
     "firstnetworkInterface": {
+        "condition": "[greater(parameters('VMCount'),0)]",
         "type": "string",
         "value": "[reference(concat(parameters('NicName'),variables('f1'),variables('f2'),variables('f3'),'-0'),'2017-01-01').ipConfigurations[0].properties.privateIPAddress]"
     }
