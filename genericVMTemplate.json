@@ -34,7 +34,9 @@
         	"type": "string",
         	"defaultValue": "Small",
        		"allowedValues": [
-            	"Small"
+            	"Small",
+                "Medium",
+                "Large"
             ]
         },
         "osystem":{
@@ -136,6 +138,12 @@
   "variables":{
 	    "sizing-Small": {
             "VMSize": "Standard_D2s_v3"
+    	},
+        "sizing-Medium": {
+            "VMSize": "Standard_D4s_v3"
+    	},
+        "sizing-Large": {
+            "VMSize": "Standard_D8s_v3"
     	},
         "os-centos": {
             "publisher": "OpenLogic",
