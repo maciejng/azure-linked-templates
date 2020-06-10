@@ -1,6 +1,6 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.1",
+    "contentVersion": "1.0.0.2",
     "parameters": {
         "VMCount": {
             "type": "int",
@@ -32,11 +32,11 @@
         },
         "deploymentSize": {
         	"type": "string",
-        	"defaultValue": "Small",
+        	"defaultValue": "small",
        		"allowedValues": [
-            	"Small",
-                "Medium",
-                "Large"
+            	"small",
+                "medium",
+                "large"
             ]
         },
         "osystem":{
@@ -136,13 +136,13 @@
         }
     },
   "variables":{
-	    "sizing-Small": {
+	    "sizing-small": {
             "VMSize": "Standard_D2s_v3"
     	},
-        "sizing-Medium": {
+        "sizing-medium": {
             "VMSize": "Standard_D4s_v3"
     	},
-        "sizing-Large": {
+        "sizing-large": {
             "VMSize": "Standard_D8s_v3"
     	},
         "os-centos": {
